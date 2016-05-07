@@ -3,17 +3,20 @@ package practica3PC.modules;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import practica3PC.utils.FileAndFolderUtils;
 
 public class PGMImageUtils extends PGMImage implements Cloneable {
 
 	public PGMImageUtils(List<String> comments, int width, int height, int maxGreyValue, List<List<Integer>> pixelsGreyValues) {
-		super(comments, height, width, maxGreyValue, pixelsGreyValues);
+		super(comments, width, height, maxGreyValue, pixelsGreyValues);
 	}
 	
 	public int getPixelValue(int rowIndex, int columnIndex) {
-		if (rowIndex >= getHeight() && columnIndex >= getWidth() 
+		//System.err.println("   Tamaño fila "+getPixelsGreyValues().size()+" Tamaño col "+getPixelsGreyValues().get(0).size());
+		//System.err.println("   Tamaño fila "+getMaxRows()+" Tamaño col "+getMaxColumns());
+		if (rowIndex > getMaxRows() && columnIndex > getMaxColumns() 
 				|| 
 			rowIndex < 0 && columnIndex < 0)
 				return -1;
@@ -58,7 +61,7 @@ public class PGMImageUtils extends PGMImage implements Cloneable {
 		getPixelsGreyValues().get(rowIndex).set(columnIndex, newValue);
 	}
 	
-	public static PGMImageUtils parsePGMFile(String[] linesFromPGMFile) {
+	public static PGMImageUtils parsePGMFile(List<String> linesFromPGMFile) {
 		boolean size = false;
 		boolean value = false;
 		boolean p2Line = true;
@@ -67,13 +70,9 @@ public class PGMImageUtils extends PGMImage implements Cloneable {
 		
 		int width = 0, height = 0, maxValue = 0;
 		
-		int lineNumber = 0, rowNumber = 0;
-		
-		List<Integer> row = new ArrayList<>();
-		
 		String[] values;
 		
-		List<List<Integer>> rows = new ArrayList<>();
+		List<Integer> numbers = new ArrayList<>();
 		
 		for (String line : linesFromPGMFile) {
 			if (!p2Line) { //Si es la primera línea, no hago nada
@@ -85,18 +84,10 @@ public class PGMImageUtils extends PGMImage implements Cloneable {
 						values = line.split("\\s+");								
 					
 						for (String val : values) {
-							if (rowNumber == 0)
-								row = new ArrayList<>();
 							
-							if (! val.equals(""))
-								row.add(Integer.parseInt(val));
-							
-							rowNumber++;
-							
-							if (rowNumber == width || (lineNumber == linesFromPGMFile.length-1 && rowNumber == (values.length-1))) {
-								rowNumber = 0;
-								rows.add(row);
-							}										
+							if (! val.equals("")) 
+								numbers.add(Integer.parseInt(val));
+																
 						}								
 					} else {
 						if (size) { //Esta parte se encarga de obtener el ancho y el alto
@@ -127,9 +118,26 @@ public class PGMImageUtils extends PGMImage implements Cloneable {
 				else 
 					break;
 			}
-			
-			lineNumber++;
 		}	
+		
+		List<Integer> row = new ArrayList<>();
+		
+		List<List<Integer>> rows = new ArrayList<>();		
+		
+		int i = 0;
+		for (int number : numbers) {
+			if (i == 0) 
+				row = new ArrayList<>();
+		
+			i++;
+			row.add(number);
+			
+			if (i == width) {
+				rows.add(row);
+				i = 0;
+			}			
+			
+		}
 		
 		return new PGMImageUtils(comments, width, height, maxValue, rows);
 	}	
@@ -164,21 +172,16 @@ public class PGMImageUtils extends PGMImage implements Cloneable {
 	
 	@Override
     public Object clone(){
-		List<List<Integer>> auxList = new ArrayList<>();
+		List<List<Integer>> auxList = new CopyOnWriteArrayList<>();
+		
+		for (int i = 0; i < getHeight(); i++) {
+			List<Integer> auxList2 = new CopyOnWriteArrayList<>();
+			for (int j = 0; j < getWidth(); j++)
+				auxList2.add(0);
+			auxList.add(auxList2);
+		}
 		
         return new PGMImageUtils(getComments(), getWidth(), getHeight(), getMaxGreyValue(), auxList);
     }	
-	
-//	public PGMImage applyMask(PGMMask mask, boolean pixelBaseCase) {
-//		if (pixelBaseCase) 
-//			if (getHeight() > getWidth())
-//				return applyMaskByRow(mask, 0, getHeight());
-//			else
-//				return applyMaskByColumn(mask, 0, getWidth());
-//		else 
-//			return applyMaskByPixel(mask, 0, getHeight(), 0, getWidth());
-//	}
-//	
-
 
 }

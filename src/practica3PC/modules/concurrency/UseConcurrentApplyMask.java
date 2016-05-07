@@ -11,10 +11,12 @@ public class UseConcurrentApplyMask {
 	private UseConcurrentApplyMask() {}
 	
 	public static final void ApplyMaskWithThreadPools(PGMImageUtils pgmImageUtils, PGMMask pgmMask, PGMImageUtils outputPGMImage) {
-		ExecutorService executor = Executors.newSingleThreadExecutor();
+		ExecutorService executor = Executors.newCachedThreadPool();
 
-		executor.execute(new ConcurrentApplyMask(pgmImageUtils, pgmMask, 0, pgmImageUtils.getMaxRows(), 0, pgmImageUtils.getMaxColumns(), outputPGMImage));
-				
+		for (int row = 0; row <= pgmImageUtils.getMaxRows(); row++) 
+			for (int column = 0; column <= pgmImageUtils.getMaxColumns(); column++)
+				executor.execute(new ConcurrentApplyMask(pgmImageUtils, pgmMask, row, pgmImageUtils.getMaxRows(), column, pgmImageUtils.getMaxColumns(), outputPGMImage));
+						
 		executor.shutdown();		
 	}
 	
