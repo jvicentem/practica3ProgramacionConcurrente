@@ -23,7 +23,8 @@ public class Menu {
 		
 		PGMImageUtils outputPGMImage = (PGMImageUtils) pgmImageUtils.clone();
 		
-		UseConcurrentApplyMask.ApplyMaskWithThreadPools(pgmImageUtils, pgmMask, outputPGMImage);
+		//UseConcurrentApplyMask.ApplyMaskWithThreadPools(pgmImageUtils, pgmMask, outputPGMImage);
+		UseConcurrentApplyMask.ApplyMaskWithForkJoin(pgmImageUtils, pgmMask, outputPGMImage);
 		
 		outputPGMImage.writePGMObjectInFile("./prueba.pgm");
 	}

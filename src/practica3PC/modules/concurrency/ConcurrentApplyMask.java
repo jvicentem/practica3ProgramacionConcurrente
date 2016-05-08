@@ -34,47 +34,65 @@ public class ConcurrentApplyMask
 
 	@Override
 	public void run() {
-		calculateNewValueForPixel();
+		calculateNewValueForPixel(getRowStartIndex(), getColumnStartIndex());
 	}
 
 	@Override
 	public void compute() {
-		if (Math.abs(getRowStartIndex() - getRowEndIndex()) == 1) { 
-			int[][] neighbourPixels;
-			
-			int newValue = 0;
-			
-			for (int k = 0; k < getPgmImageUtils().getMaxColumns(); k++) { //Itero por los distintos elementos de la fila
-				neighbourPixels = getPgmImageUtils().getNeighbourPixels(getRowStartIndex(), k, getPgmMask().getMaskSize());			
-				
-				newValue = getPgmMask().applyMaskToPixel(neighbourPixels);
-			
-				getOutputPGMImage().setValueToPixel(getRowStartIndex(), k, newValue);				
-			} 
-		} else {
+		if (getPgmImageUtils().getMaxRows() < getPgmImageUtils().getMaxColumns())
+			applyMaskByRows();
+		else
+			applyMaskByColumns();
+	}
+	
+	private void applyMaskByRows() {
+		if (Math.abs(getRowStartIndex() - getRowEndIndex()) == 1) 			
+			for (int j = 0; j < getPgmImageUtils().getMaxColumns(); j++)  //Itero por los distintos elementos de la fila
+				calculateNewValueForPixel(getRowStartIndex(), j);			 
+	    else 
 			if (getRowStartIndex() < getRowEndIndex()/2) {
 				new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), getRowEndIndex()/2, getColumnStartIndex(), getColumnEndIndex(), getOutputPGMImage()).fork();	
 				new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowEndIndex()/2, getRowEndIndex(), getColumnStartIndex(), getColumnEndIndex(), getOutputPGMImage()).compute();
-			} else {
+			} else 
 				if (getRowStartIndex() == getRowEndIndex()/2) {
 					new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), ((getRowEndIndex()/2)+1), getColumnStartIndex(), getColumnEndIndex(), getOutputPGMImage()).fork();	
 					new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), ((getRowEndIndex()/2)+1), getRowEndIndex(), getColumnStartIndex(), getColumnEndIndex(), getOutputPGMImage()).compute();					
-				} else {
+				} else 
 					if (getRowStartIndex() > getRowEndIndex()/2) {
 						new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), (getRowEndIndex()-1), getColumnStartIndex(), getColumnEndIndex(), getOutputPGMImage()).fork();			
 						new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), (getRowEndIndex()-1), getRowEndIndex(), getColumnStartIndex(), getColumnEndIndex(), getOutputPGMImage()).compute();							
-					}
-				}
-			}
-		}		
+					}			
 	}
 	
-	private void calculateNewValueForPixel() {
-		int[][] neighbourPixels = getPgmImageUtils().getNeighbourPixels(getRowStartIndex(), getColumnStartIndex(), getPgmMask().getMaskSize());			
-		
-		int newValue = getPgmMask().applyMaskToPixel(neighbourPixels);
+	private void applyMaskByColumns() {
+		if (Math.abs(getColumnStartIndex() - getColumnEndIndex()) == 1) 			
+			for (int i = 0; i < getPgmImageUtils().getMaxColumns(); i++)  //Itero por los distintos elementos de la columna
+				calculateNewValueForPixel(i, getColumnStartIndex());			 
+	    else 
+			if (getColumnStartIndex() < getColumnEndIndex()/2) {
+				new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), getRowEndIndex(), getColumnStartIndex(), getColumnEndIndex()/2, getOutputPGMImage()).fork();	
+				new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), getRowEndIndex(), getColumnEndIndex()/2, getColumnEndIndex(), getOutputPGMImage()).compute();
+			} else 
+				if (getColumnStartIndex() == getColumnEndIndex()/2) {
+					new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), getRowEndIndex(), getColumnStartIndex(), ((getColumnEndIndex()/2)+1), getOutputPGMImage()).fork();	
+					new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), getRowEndIndex(), ((getColumnEndIndex()/2)+1), getColumnEndIndex(), getOutputPGMImage()).compute();					
+				} else 
+					if (getColumnStartIndex() > getColumnEndIndex()/2) {
+						new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), getRowEndIndex(), getColumnStartIndex(), (getColumnEndIndex()-1), getOutputPGMImage()).fork();			
+						new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowEndIndex(), getRowEndIndex(), getColumnEndIndex()-1, getColumnEndIndex(), getOutputPGMImage()).compute();												
+					}			
+	}
 	
-		getOutputPGMImage().setValueToPixel(getRowStartIndex(), getColumnStartIndex(), newValue);		
+	private void calculateNewValueForPixel(int rowIndex, int columnIndex) {
+		int[][] neighbourPixels = getPgmImageUtils().getNeighbourPixels(rowIndex,
+																		columnIndex,
+																		getPgmMask().getMaskSize());			
+
+		int newValue = getPgmMask().applyMaskToPixel(neighbourPixels);
+
+		getOutputPGMImage().setValueToPixel(rowIndex,
+											columnIndex,
+											newValue);			
 	}
 
 	private PGMImageUtils getOutputPGMImage() {
@@ -104,46 +122,5 @@ public class ConcurrentApplyMask
 	private PGMMask getPgmMask() {
 		return pgmMask;
 	}
-	
-//	
-//	divideAndConquerForRunMethod(getRowStartIndex(), getRowEndIndex());
-//	private void divideAndConquerForRunMethod(int rowStartIndex, int rowEndIndex) {
-//		//System.err.println(rowStartIndex + " " + rowEndIndex);
-//		if (Math.abs(rowStartIndex - rowEndIndex) == 1) { 
-//			//System.err.println(">> ENTRA");
-//			int[][] neighbourPixels;
-//			
-//			int newValue = 0;
-//			
-//			for (int k = 0; k < getPgmImageUtils().getMaxColumns(); k++) { //Itero por los distintos elementos de la fila
-//				neighbourPixels = getPgmImageUtils().getNeighbourPixels(rowStartIndex, k, getPgmMask().getMaskSize());			
-//				
-//				newValue = getPgmMask().applyMaskToPixel(neighbourPixels);
-//			
-//				getOutputPGMImage().setValueToPixel(rowStartIndex, k, newValue);			
-//			} 
-//		} else {
-//			if (rowStartIndex < rowEndIndex/2) {
-//				//System.err.println("1| "+rowStartIndex+" "+rowEndIndex+"  inicio: "+rowStartIndex+" final: "+rowEndIndex/2);
-//				divideAndConquerForRunMethod(rowStartIndex, rowEndIndex/2);	
-//				//System.err.println("2| "+rowStartIndex+" "+rowEndIndex+"  inicio: "+rowEndIndex/2+" final: "+rowEndIndex);
-//				divideAndConquerForRunMethod(rowEndIndex/2, rowEndIndex);
-//			} else {
-//				if (rowStartIndex == rowEndIndex/2) {
-//					//System.err.println("3| "+rowStartIndex+" "+rowEndIndex+"  inicio: "+rowStartIndex+" final: "+((rowEndIndex/2)+1));
-//					divideAndConquerForRunMethod(rowStartIndex, ((rowEndIndex/2)+1));	
-//					//System.err.println("4| "+rowStartIndex+" "+rowEndIndex+"  inicio: "+((rowEndIndex/2)+1)+" final: "+rowEndIndex);
-//					divideAndConquerForRunMethod(((rowEndIndex/2)+1), rowEndIndex);					
-//				} else {
-//					if (rowStartIndex > rowEndIndex/2) {
-//						//System.err.println("5| "+rowStartIndex+" "+rowEndIndex+"  inicio: "+rowStartIndex+" final: "+(rowEndIndex-1));
-//						divideAndConquerForRunMethod(rowStartIndex, (rowEndIndex-1));	
-//						//System.err.println("6| "+rowStartIndex+" "+rowEndIndex+"  inicio: "+(rowEndIndex-1)+" final: "+rowEndIndex);
-//						divideAndConquerForRunMethod((rowEndIndex-1), rowEndIndex);							
-//					}
-//				}
-//			}
-//		}		
-//	}	
 	
 }
