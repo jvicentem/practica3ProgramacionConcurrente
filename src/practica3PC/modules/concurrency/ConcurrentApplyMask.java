@@ -18,7 +18,7 @@ public class ConcurrentApplyMask
 	public ConcurrentApplyMask(PGMImageUtils pgmImageUtils, PGMMask pgmMask, int rowStartIndex, int rowEndIndex, int columnStartIndex, int columnEndIndex, PGMImageUtils outputPGMImage) {
 		if (rowStartIndex >= 0 && columnStartIndex >= 0 && rowEndIndex >= 0 && columnEndIndex >= 0 
 				&& 
-			rowStartIndex <= pgmImageUtils.getMaxRows() && columnStartIndex <= pgmImageUtils.getMaxColumns() && rowEndIndex <= pgmImageUtils.getMaxRows() && columnEndIndex <= pgmImageUtils.getMaxColumns()
+			rowStartIndex <= pgmImageUtils.getMaxRows()+1 && columnStartIndex <= pgmImageUtils.getMaxColumns()+1 && rowEndIndex <= pgmImageUtils.getMaxRows()+1 && columnEndIndex <= pgmImageUtils.getMaxColumns()+1
 				&& 
 			rowStartIndex <= rowEndIndex && columnStartIndex <= columnEndIndex) {
 			this.rowStartIndex = rowStartIndex;
@@ -46,41 +46,87 @@ public class ConcurrentApplyMask
 	}
 	
 	private void applyMaskByRows() {
-		if (Math.abs(getRowStartIndex() - getRowEndIndex()) == 1) 			
-			for (int j = 0; j < getPgmImageUtils().getMaxColumns(); j++)  //Itero por los distintos elementos de la fila
-				calculateNewValueForPixel(getRowStartIndex(), j);			 
-	    else 
+		if (Math.abs(getRowStartIndex() - getRowEndIndex()) == 1) {		
+			//System.err.println(getRowStartIndex());
+			for (int j = 0; j <= getPgmImageUtils().getMaxColumns(); j++)  //Itero por los distintos elementos de la fila
+				calculateNewValueForPixel(getRowStartIndex(), j);		
+		}
+	    else {
+	    	int startRowFirstHalf = 0, endRowFirstHalf = 0, startRowSecondHalf = 0, endRowSecondHalf = 0;
+	    	
 			if (getRowStartIndex() < getRowEndIndex()/2) {
-				new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), getRowEndIndex()/2, getColumnStartIndex(), getColumnEndIndex(), getOutputPGMImage()).fork();	
-				new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowEndIndex()/2, getRowEndIndex(), getColumnStartIndex(), getColumnEndIndex(), getOutputPGMImage()).compute();
+				startRowFirstHalf = getRowStartIndex();
+				endRowFirstHalf = getRowEndIndex()/2;
+				
+				startRowSecondHalf = getRowEndIndex()/2;
+				endRowSecondHalf = getRowEndIndex();
 			} else 
 				if (getRowStartIndex() == getRowEndIndex()/2) {
-					new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), ((getRowEndIndex()/2)+1), getColumnStartIndex(), getColumnEndIndex(), getOutputPGMImage()).fork();	
-					new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), ((getRowEndIndex()/2)+1), getRowEndIndex(), getColumnStartIndex(), getColumnEndIndex(), getOutputPGMImage()).compute();					
+					startRowFirstHalf = getRowStartIndex();
+					endRowFirstHalf = (getRowEndIndex()/2)+1;
+					
+					startRowSecondHalf = ((getRowEndIndex()/2)+1);
+					endRowSecondHalf = getRowEndIndex();									
 				} else 
 					if (getRowStartIndex() > getRowEndIndex()/2) {
-						new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), (getRowEndIndex()-1), getColumnStartIndex(), getColumnEndIndex(), getOutputPGMImage()).fork();			
-						new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), (getRowEndIndex()-1), getRowEndIndex(), getColumnStartIndex(), getColumnEndIndex(), getOutputPGMImage()).compute();							
+						startRowFirstHalf = getRowStartIndex();
+						endRowFirstHalf = (getRowEndIndex()-1);
+						
+						startRowSecondHalf = (getRowEndIndex()-1);
+						endRowSecondHalf = getRowEndIndex();													
 					}			
+			
+			ConcurrentApplyMask firstHalf = new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), startRowFirstHalf, endRowFirstHalf, getColumnStartIndex(), getColumnEndIndex(), getOutputPGMImage());
+			
+			firstHalf.fork();
+			new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), startRowSecondHalf, endRowSecondHalf, getColumnStartIndex(), getColumnEndIndex(), getOutputPGMImage()).compute();
+			firstHalf.join();
+	    }
 	}
 	
 	private void applyMaskByColumns() {
 		if (Math.abs(getColumnStartIndex() - getColumnEndIndex()) == 1) 			
-			for (int i = 0; i < getPgmImageUtils().getMaxColumns(); i++)  //Itero por los distintos elementos de la columna
+			for (int i = 0; i <= getPgmImageUtils().getMaxRows(); i++)  //Itero por los distintos elementos de la columna
 				calculateNewValueForPixel(i, getColumnStartIndex());			 
-	    else 
+	    else {
+	    	int startColumnFirstHalf = 0, endColumnFirstHalf = 0, startColumnSecondHalf = 0, endColumnSecondHalf = 0;
+	    	
 			if (getColumnStartIndex() < getColumnEndIndex()/2) {
-				new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), getRowEndIndex(), getColumnStartIndex(), getColumnEndIndex()/2, getOutputPGMImage()).fork();	
-				new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), getRowEndIndex(), getColumnEndIndex()/2, getColumnEndIndex(), getOutputPGMImage()).compute();
+				startColumnFirstHalf = getColumnStartIndex();
+				endColumnFirstHalf = getColumnEndIndex()/2;
+				
+				startColumnSecondHalf = getColumnEndIndex()/2;
+				endColumnSecondHalf = getColumnEndIndex();
+				
+				//new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), getRowEndIndex(), getColumnStartIndex(), getColumnEndIndex()/2, getOutputPGMImage()).fork();	
+				//new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), getRowEndIndex(), getColumnEndIndex()/2, getColumnEndIndex(), getOutputPGMImage()).compute();
 			} else 
 				if (getColumnStartIndex() == getColumnEndIndex()/2) {
-					new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), getRowEndIndex(), getColumnStartIndex(), ((getColumnEndIndex()/2)+1), getOutputPGMImage()).fork();	
-					new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), getRowEndIndex(), ((getColumnEndIndex()/2)+1), getColumnEndIndex(), getOutputPGMImage()).compute();					
+					startColumnFirstHalf = getColumnStartIndex();
+					endColumnFirstHalf = ((getColumnEndIndex()/2)+1);
+					
+					startColumnSecondHalf = ((getColumnEndIndex()/2)+1);
+					endColumnSecondHalf = getColumnEndIndex();
+					
+					//new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), getRowEndIndex(), getColumnStartIndex(), ((getColumnEndIndex()/2)+1), getOutputPGMImage()).fork();	
+					//new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), getRowEndIndex(), ((getColumnEndIndex()/2)+1), getColumnEndIndex(), getOutputPGMImage()).compute();					
 				} else 
 					if (getColumnStartIndex() > getColumnEndIndex()/2) {
-						new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), getRowEndIndex(), getColumnStartIndex(), (getColumnEndIndex()-1), getOutputPGMImage()).fork();			
-						new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowEndIndex(), getRowEndIndex(), getColumnEndIndex()-1, getColumnEndIndex(), getOutputPGMImage()).compute();												
-					}			
+						startColumnFirstHalf = getColumnStartIndex();
+						endColumnFirstHalf = (getColumnEndIndex()-1);
+						
+						startColumnSecondHalf = getColumnEndIndex()-1;
+						endColumnSecondHalf = getColumnEndIndex();
+						
+						//new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), getRowEndIndex(), getColumnStartIndex(), (getColumnEndIndex()-1), getOutputPGMImage()).fork();			
+						//new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowEndIndex(), getRowEndIndex(), getColumnEndIndex()-1, getColumnEndIndex(), getOutputPGMImage()).compute();												
+					}	
+			
+			ConcurrentApplyMask firstHalf = new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), getRowEndIndex(), startColumnFirstHalf, endColumnFirstHalf, getOutputPGMImage());	
+			firstHalf.fork();
+			new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), getRowEndIndex(), startColumnSecondHalf, endColumnSecondHalf, getOutputPGMImage()).compute();	
+			firstHalf.join();
+	    }	
 	}
 	
 	private void calculateNewValueForPixel(int rowIndex, int columnIndex) {

@@ -177,11 +177,25 @@ public class PGMImageUtils extends PGMImage implements Cloneable {
 		for (int i = 0; i < getHeight(); i++) {
 			List<Integer> auxList2 = new CopyOnWriteArrayList<>();
 			for (int j = 0; j < getWidth(); j++)
-				auxList2.add(0);
+				auxList2.add(255);
 			auxList.add(auxList2);
 		}
 		
         return new PGMImageUtils(getComments(), getWidth(), getHeight(), getMaxGreyValue(), auxList);
     }	
+	
+//	public boolean filaMal() {
+//		int i = 0;
+//		for (List<Integer> list : getPixelsGreyValues()) {
+//			for (int numero : list) {
+//				i = (numero == 255)? i + 1 : i;
+//			}
+//			System.err.println(i + " " + getWidth());
+//			if (i == getWidth()) return true;
+//			i = 0;
+//		}
+//		
+//		return false;
+//	}
 
 }

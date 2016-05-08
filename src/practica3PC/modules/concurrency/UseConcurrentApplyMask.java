@@ -21,6 +21,6 @@ public class UseConcurrentApplyMask {
 	}
 	
 	public static final void ApplyMaskWithForkJoin(PGMImageUtils pgmImageUtils, PGMMask pgmMask, PGMImageUtils outputPGMImage) {
-		ForkJoinPool.commonPool().invoke(new ConcurrentApplyMask(pgmImageUtils, pgmMask, 0, pgmImageUtils.getMaxRows(), 0, pgmImageUtils.getMaxColumns(), outputPGMImage));
+		ForkJoinPool.commonPool().invoke(new ConcurrentApplyMask(pgmImageUtils, pgmMask, 0, pgmImageUtils.getMaxRows()+1, 0, pgmImageUtils.getMaxColumns()+1, outputPGMImage));
 	}
 }
