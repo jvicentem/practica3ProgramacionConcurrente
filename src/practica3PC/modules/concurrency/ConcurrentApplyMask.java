@@ -46,11 +46,9 @@ public class ConcurrentApplyMask
 	}
 	
 	private void applyMaskByRows() {
-		if (Math.abs(getRowStartIndex() - getRowEndIndex()) == 1) {		
-			//System.err.println(getRowStartIndex());
+		if (Math.abs(getRowStartIndex() - getRowEndIndex()) == 1) 		
 			for (int j = 0; j <= getPgmImageUtils().getMaxColumns(); j++)  //Itero por los distintos elementos de la fila
 				calculateNewValueForPixel(getRowStartIndex(), j);		
-		}
 	    else {
 	    	int startRowFirstHalf = 0, endRowFirstHalf = 0, startRowSecondHalf = 0, endRowSecondHalf = 0;
 	    	
@@ -97,29 +95,20 @@ public class ConcurrentApplyMask
 				
 				startColumnSecondHalf = getColumnEndIndex()/2;
 				endColumnSecondHalf = getColumnEndIndex();
-				
-				//new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), getRowEndIndex(), getColumnStartIndex(), getColumnEndIndex()/2, getOutputPGMImage()).fork();	
-				//new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), getRowEndIndex(), getColumnEndIndex()/2, getColumnEndIndex(), getOutputPGMImage()).compute();
 			} else 
 				if (getColumnStartIndex() == getColumnEndIndex()/2) {
 					startColumnFirstHalf = getColumnStartIndex();
 					endColumnFirstHalf = ((getColumnEndIndex()/2)+1);
 					
 					startColumnSecondHalf = ((getColumnEndIndex()/2)+1);
-					endColumnSecondHalf = getColumnEndIndex();
-					
-					//new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), getRowEndIndex(), getColumnStartIndex(), ((getColumnEndIndex()/2)+1), getOutputPGMImage()).fork();	
-					//new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), getRowEndIndex(), ((getColumnEndIndex()/2)+1), getColumnEndIndex(), getOutputPGMImage()).compute();					
+					endColumnSecondHalf = getColumnEndIndex();			
 				} else 
 					if (getColumnStartIndex() > getColumnEndIndex()/2) {
 						startColumnFirstHalf = getColumnStartIndex();
 						endColumnFirstHalf = (getColumnEndIndex()-1);
 						
 						startColumnSecondHalf = getColumnEndIndex()-1;
-						endColumnSecondHalf = getColumnEndIndex();
-						
-						//new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), getRowEndIndex(), getColumnStartIndex(), (getColumnEndIndex()-1), getOutputPGMImage()).fork();			
-						//new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowEndIndex(), getRowEndIndex(), getColumnEndIndex()-1, getColumnEndIndex(), getOutputPGMImage()).compute();												
+						endColumnSecondHalf = getColumnEndIndex();									
 					}	
 			
 			ConcurrentApplyMask firstHalf = new ConcurrentApplyMask(getPgmImageUtils(), getPgmMask(), getRowStartIndex(), getRowEndIndex(), startColumnFirstHalf, endColumnFirstHalf, getOutputPGMImage());	

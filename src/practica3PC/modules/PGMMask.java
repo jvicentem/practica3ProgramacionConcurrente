@@ -5,32 +5,40 @@ public enum PGMMask {
 	HORIZONTAL_SOBEL(new int[][] {{-1, -2, -1},
 								  {0, 0, 0},
 								  {1, 2, 1}}
+					 , "Sobel horizontal"
 	),
 	VERTICAL_SOBEL(new int[][] {{-1, 0, 1},
 							    {-2, 0, 2},
 								{-1, 0, 1}}
+				  , "Sobel vertical"
 	),	
 	UNSHARP(new int[][] {{0, -1, 0},
 						 {-1, 5, -1},
 						 {0, -1, 0}}
+	   	   , "Enfocar"
 	),
 	EDGE_DETECTION(new int[][] {{0, 1, 0},
 		   						{1, 4, 1},
 		   						{0, 1, 0}}
+	   			  , "Detección de bordes"
 	),
 	EMBOSS(new int[][] {{-2, -1, 0},
 		   			    {-1, 1, 1},
 		   				{0, 1, 2}}
+	   	  , "Emboss"
 	),
 	BLUR(new int[][] {{1, 1, 1},
 		   			  {1, 1, 1},
 		   			  {1, 1, 1}}
+	    , "Desenfocar"
 	);
 	
 	private int[][] maskValues; 	
+	private String name;
 	
-	private PGMMask(int[][] maskValues) {
+	private PGMMask(int[][] maskValues, String name) {
 		this.maskValues = maskValues;
+		this.name = name;
 	}
 	
 	public int applyMaskToPixel(int[][] pixels) { //La máscara se aplica al píxel de la posición 1, 1 de la matriz pixels
@@ -61,6 +69,15 @@ public enum PGMMask {
 	
 	private int[][] getMaskValues() {
 		return maskValues;
+	}
+	
+	@Override
+	public String toString() {
+		return getName();
+	}
+	
+	private String getName() {
+		return name;
 	}
 	
 }

@@ -14,8 +14,6 @@ public class PGMImageUtils extends PGMImage implements Cloneable {
 	}
 	
 	public int getPixelValue(int rowIndex, int columnIndex) {
-		//System.err.println("   Tamaño fila "+getPixelsGreyValues().size()+" Tamaño col "+getPixelsGreyValues().get(0).size());
-		//System.err.println("   Tamaño fila "+getMaxRows()+" Tamaño col "+getMaxColumns());
 		if (rowIndex > getMaxRows() && columnIndex > getMaxColumns() 
 				|| 
 			rowIndex < 0 && columnIndex < 0)
@@ -75,21 +73,19 @@ public class PGMImageUtils extends PGMImage implements Cloneable {
 		List<Integer> numbers = new ArrayList<>();
 		
 		for (String line : linesFromPGMFile) {
-			if (!p2Line) { //Si es la primera línea, no hago nada
+			if (!p2Line) {  //Si es la primera línea, no hago nada
 				if (line.charAt(0) == '#') {
 					comments.add(line);
 					size = true;
-				} else {
+				} else 
 					if (!value && !size) { //Esta parte se encarga de parsear las líneas de valores
 						values = line.split("\\s+");								
 					
-						for (String val : values) {
-							
+						for (String val : values) 
 							if (! val.equals("")) 
 								numbers.add(Integer.parseInt(val));
-																
-						}								
-					} else {
+																		
+					} else 
 						if (size) { //Esta parte se encarga de obtener el ancho y el alto
 							String[] widthAndHeight = line.split("\\s+");
 							
@@ -101,23 +97,19 @@ public class PGMImageUtils extends PGMImage implements Cloneable {
 							size = false;
 							
 							continue;
-						} else {
+						} else 
 							if (value) { //Esta parte se encarga de obtener el valor máximo de grises para los píxeles
 								maxValue = Integer.parseInt(line);
 								
 								value = false;
 								
 								continue;
-							}							
-						}										
-					}
-				}
-			} else {
+							}																	
+			} else 
 				if (line.equals("P2")) //Si la primera línea no es "P2", eso quiere decir que el archivo no es un archivo PGM válido
 					p2Line = false;
 				else 
 					break;
-			}
 		}	
 		
 		List<Integer> row = new ArrayList<>();
@@ -145,9 +137,8 @@ public class PGMImageUtils extends PGMImage implements Cloneable {
 	public void writePGMObjectInFile(String filePath) throws IOException {
 		FileAndFolderUtils.writeAtEndOfFile(filePath, "P2");
 		
-		for (String comment : getComments()) {
+		for (String comment : getComments()) 
 			FileAndFolderUtils.writeAtEndOfFile(filePath, comment);
-		}
 		
 		FileAndFolderUtils.writeAtEndOfFile(filePath, Integer.toString(getWidth()) + " " + Integer.toString(getHeight()));
 		
@@ -159,43 +150,30 @@ public class PGMImageUtils extends PGMImage implements Cloneable {
 		
 		for (List<Integer> row : getPixelsGreyValues()) {
 			auxString = "";
-			for (int number : row) {
+			
+			for (int number : row) 
 				auxString = (auxString.equals(""))? Integer.toString(number) : auxString + " " + Integer.toString(number);
-			}
+			
 			pixels.add(auxString);
 		}
 		
-		for (String line : pixels) {
+		for (String line : pixels) 
 			FileAndFolderUtils.writeAtEndOfFile(filePath, line);
-		}
 	}
 	
-	@Override
-    public Object clone(){
+    public PGMImageUtils copyPGMImageUtilsForModificationPurposes(){
 		List<List<Integer>> auxList = new CopyOnWriteArrayList<>();
 		
 		for (int i = 0; i < getHeight(); i++) {
 			List<Integer> auxList2 = new CopyOnWriteArrayList<>();
+			
 			for (int j = 0; j < getWidth(); j++)
 				auxList2.add(255);
+			
 			auxList.add(auxList2);
 		}
 		
         return new PGMImageUtils(getComments(), getWidth(), getHeight(), getMaxGreyValue(), auxList);
     }	
-	
-//	public boolean filaMal() {
-//		int i = 0;
-//		for (List<Integer> list : getPixelsGreyValues()) {
-//			for (int numero : list) {
-//				i = (numero == 255)? i + 1 : i;
-//			}
-//			System.err.println(i + " " + getWidth());
-//			if (i == getWidth()) return true;
-//			i = 0;
-//		}
-//		
-//		return false;
-//	}
 
 }

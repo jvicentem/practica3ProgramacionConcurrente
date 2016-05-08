@@ -1,5 +1,6 @@
 package practica3PC.modules;
 
+import java.security.InvalidParameterException;
 import java.util.List;
 
 public class PGMImage {
@@ -14,10 +15,13 @@ public class PGMImage {
 		this.width = width;
 		this.maxGreyValue = maxGreyValue;
 		this.pixelsGreyValues = pixelsGreyValues;
+		
+		if (!isAValidPGMImage())
+			throw new InvalidParameterException("Alguno de los parámetros introducidos no es válido.");
 	}
 		
-	public boolean isAValidPGMImage() {
-		return validMaxGreyValue() && validComments() && validPixelsGreyValues();
+	private boolean isAValidPGMImage() {
+		return validMaxGreyValue() && validComments() && validPixelsGreyValues() && validSize();
 	}
 	
 	private boolean validMaxGreyValue() {
@@ -26,7 +30,7 @@ public class PGMImage {
 	
 	private boolean validComments() {
 		for (String comment : getComments())
-			if (comment.charAt(0) == '#') return false;
+			if (comment.charAt(0) != '#') return false;
 		
 		return true;
 	}
@@ -38,6 +42,10 @@ public class PGMImage {
 					return false;
 		
 		return true;
+	}
+	
+	private boolean validSize() {
+		return getWidth() > 0 && getHeight() > 0;
 	}
 	
 	protected List<String> getComments() {
