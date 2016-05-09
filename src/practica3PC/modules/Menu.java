@@ -44,6 +44,8 @@ public class Menu {
 			imageFilePath = keyboardReader.readLine();
 		}
 		
+		System.out.println("");
+		
 		return imageFilePath;		
 	}
 	
@@ -69,6 +71,8 @@ public class Menu {
 			
 			option = Integer.parseInt(keyboardReader.readLine());
 		}
+		
+		System.out.println("");
 				
 		return masks[option];
 	}
@@ -100,7 +104,7 @@ public class Menu {
 	}
 	
 	private static void saveModifiedImage(BufferedReader keyboardReader, PGMImageUtils outputPGMImage) throws IOException {
-		System.out.println("> Introduce el nombre, sin extensión, de la imagen modificada a guardar: ");
+		System.out.println("\n> Introduce el nombre, sin extensión, de la imagen modificada a guardar: ");
 		String imageName = keyboardReader.readLine();
 		
 		while (imageName.trim().isEmpty()) {
@@ -133,5 +137,7 @@ public class Menu {
 		
 		if (overwrite.equals("") || overwrite.toLowerCase().equals("s")) 
 			outputPGMImage.writePGMObjectInFile(imageName + ".pgm");
+		
+		System.out.println("");
 	}
 }
