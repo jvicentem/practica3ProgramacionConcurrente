@@ -1,11 +1,11 @@
-package practica3PC.modules.concurrency;
+package practica3PC.modules.pgm.concurrency;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 
-import practica3PC.modules.PGMImageUtils;
-import practica3PC.modules.PGMMask;
+import practica3PC.modules.pgm.PGMImageUtils;
+import practica3PC.modules.pgm.PGMMask;
 
 public class UseConcurrentApplyMask {
 	private UseConcurrentApplyMask() {}

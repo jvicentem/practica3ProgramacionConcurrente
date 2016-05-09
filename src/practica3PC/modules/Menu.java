@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
-import practica3PC.modules.concurrency.UseConcurrentApplyMask;
+import practica3PC.modules.pgm.PGMImageUtils;
+import practica3PC.modules.pgm.PGMMask;
+import practica3PC.modules.pgm.concurrency.UseConcurrentApplyMask;
 import practica3PC.utils.FileAndFolderUtils;
 
 public class Menu {
@@ -118,7 +120,7 @@ public class Menu {
 		
 		boolean goOn = false;
 		
-		while (!goOn) {
+		while (!goOn) 
 			if (auxFile.exists()) {
 				System.out.println(">> El archivo ya existe ¿Sobre escribir? (S/N)");
 				overwrite = keyboardReader.readLine();
@@ -130,10 +132,8 @@ public class Menu {
 					if (overwrite.toLowerCase().equals("s"))
 						goOn = true;
 				}
-			} else {
+			} else 
 				goOn = true;
-			}
-		}
 		
 		if (overwrite.equals("") || overwrite.toLowerCase().equals("s")) 
 			outputPGMImage.writePGMObjectInFile(imageName + ".pgm");

@@ -1,4 +1,4 @@
-package practica3PC.modules;
+package practica3PC.modules.pgm;
 
 import java.security.InvalidParameterException;
 import java.util.List;

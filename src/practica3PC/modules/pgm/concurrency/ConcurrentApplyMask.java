@@ -1,10 +1,10 @@
-package practica3PC.modules.concurrency;
+package practica3PC.modules.pgm.concurrency;
 
 import java.security.InvalidParameterException;
 import java.util.concurrent.RecursiveAction;
 
-import practica3PC.modules.PGMImageUtils;
-import practica3PC.modules.PGMMask;
+import practica3PC.modules.pgm.PGMImageUtils;
+import practica3PC.modules.pgm.PGMMask;
 
 public class ConcurrentApplyMask 
 								extends RecursiveAction 
