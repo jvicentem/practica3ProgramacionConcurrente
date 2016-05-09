@@ -7,7 +7,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import practica3PC.utils.FileAndFolderUtils;
 
-public class PGMImageUtils extends PGMImage implements Cloneable {
+public class PGMImageUtils extends PGMImage {
 
 	public PGMImageUtils(List<String> comments, int width, int height, int maxGreyValue, List<List<Integer>> pixelsGreyValues) {
 		super(comments, width, height, maxGreyValue, pixelsGreyValues);
@@ -82,7 +82,7 @@ public class PGMImageUtils extends PGMImage implements Cloneable {
 						values = line.split("\\s+");								
 					
 						for (String val : values) 
-							if (! val.equals("")) 
+							if (! "".equals(val)) 
 								numbers.add(Integer.parseInt(val));
 																		
 					} else 
@@ -106,7 +106,7 @@ public class PGMImageUtils extends PGMImage implements Cloneable {
 								continue;
 							}																	
 			} else 
-				if (line.equals("P2")) //Si la primera línea no es "P2", eso quiere decir que el archivo no es un archivo PGM válido
+				if ("P2".equals(line)) //Si la primera línea no es "P2", eso quiere decir que el archivo no es un archivo PGM válido
 					p2Line = false;
 				else 
 					break;
@@ -152,7 +152,7 @@ public class PGMImageUtils extends PGMImage implements Cloneable {
 			auxString = "";
 			
 			for (int number : row) 
-				auxString = (auxString.equals(""))? Integer.toString(number) : auxString + " " + Integer.toString(number);
+				auxString = "".equals(auxString)? Integer.toString(number) : auxString + " " + Integer.toString(number);
 			
 			pixels.add(auxString);
 		}

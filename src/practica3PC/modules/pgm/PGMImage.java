@@ -30,7 +30,8 @@ public class PGMImage {
 	
 	private boolean validComments() {
 		for (String comment : getComments())
-			if (comment.charAt(0) != '#') return false;
+			if (comment.charAt(0) != '#') 
+				return false;
 		
 		return true;
 	}

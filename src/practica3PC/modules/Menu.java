@@ -86,7 +86,7 @@ public class Menu {
 		
 		String option = keyboardReader.readLine();
 		
-		while (!option.equals("1") && !option.equals("2")) {
+		while (!"1".equals(option) && !"2".equals(option)) {
 			System.out.println("Elige la estrategia de concurrencia: ");
 			System.out.println("1. Thread pools");
 			System.out.println("2. Fork Join");			
@@ -125,7 +125,7 @@ public class Menu {
 				System.out.println(">> El archivo ya existe ¿Sobre escribir? (S/N)");
 				overwrite = keyboardReader.readLine();
 				
-				while (!overwrite.toLowerCase().equals("s") && !overwrite.toLowerCase().equals("n")) {
+				while (!"s".equalsIgnoreCase(overwrite) && !"n".equalsIgnoreCase(overwrite)) {
 					System.out.println(">> El archivo ya existe ¿Sobre escribir? (S/N)");
 					overwrite = keyboardReader.readLine();
 					
@@ -135,7 +135,7 @@ public class Menu {
 			} else 
 				goOn = true;
 		
-		if (overwrite.equals("") || overwrite.toLowerCase().equals("s")) 
+		if ("".equals(overwrite) || "s".equalsIgnoreCase(overwrite)) 
 			outputPGMImage.writePGMObjectInFile(imageName + ".pgm");
 		
 		System.out.println("");

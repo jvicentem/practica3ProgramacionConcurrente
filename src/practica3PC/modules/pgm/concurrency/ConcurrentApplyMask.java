@@ -21,6 +21,7 @@ public class ConcurrentApplyMask
 			rowStartIndex <= pgmImageUtils.getMaxRows()+1 && columnStartIndex <= pgmImageUtils.getMaxColumns()+1 && rowEndIndex <= pgmImageUtils.getMaxRows()+1 && columnEndIndex <= pgmImageUtils.getMaxColumns()+1
 				&& 
 			rowStartIndex <= rowEndIndex && columnStartIndex <= columnEndIndex) {
+			
 			this.rowStartIndex = rowStartIndex;
 			this.rowEndIndex = rowEndIndex;
 			this.columnStartIndex = columnStartIndex;
@@ -63,14 +64,14 @@ public class ConcurrentApplyMask
 					startRowFirstHalf = getRowStartIndex();
 					endRowFirstHalf = (getRowEndIndex()/2)+1;
 					
-					startRowSecondHalf = ((getRowEndIndex()/2)+1);
+					startRowSecondHalf = (getRowEndIndex()/2)+1;
 					endRowSecondHalf = getRowEndIndex();									
 				} else 
 					if (getRowStartIndex() > getRowEndIndex()/2) {
 						startRowFirstHalf = getRowStartIndex();
-						endRowFirstHalf = (getRowEndIndex()-1);
+						endRowFirstHalf = getRowEndIndex()-1;
 						
-						startRowSecondHalf = (getRowEndIndex()-1);
+						startRowSecondHalf = getRowEndIndex()-1;
 						endRowSecondHalf = getRowEndIndex();													
 					}			
 			
@@ -98,14 +99,14 @@ public class ConcurrentApplyMask
 			} else 
 				if (getColumnStartIndex() == getColumnEndIndex()/2) {
 					startColumnFirstHalf = getColumnStartIndex();
-					endColumnFirstHalf = ((getColumnEndIndex()/2)+1);
+					endColumnFirstHalf = (getColumnEndIndex()/2)+1;
 					
-					startColumnSecondHalf = ((getColumnEndIndex()/2)+1);
+					startColumnSecondHalf = (getColumnEndIndex()/2)+1;
 					endColumnSecondHalf = getColumnEndIndex();			
 				} else 
 					if (getColumnStartIndex() > getColumnEndIndex()/2) {
 						startColumnFirstHalf = getColumnStartIndex();
-						endColumnFirstHalf = (getColumnEndIndex()-1);
+						endColumnFirstHalf = getColumnEndIndex()-1;
 						
 						startColumnSecondHalf = getColumnEndIndex()-1;
 						endColumnSecondHalf = getColumnEndIndex();									
