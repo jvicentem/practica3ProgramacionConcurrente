@@ -2,6 +2,7 @@ package practica3PC.modules;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
@@ -139,5 +140,32 @@ public class Menu {
 			outputPGMImage.writePGMObjectInFile(imageName + ".pgm");
 		
 		System.out.println("");
+	}
+	
+	public static void test() throws IOException {
+		String outputFileName = "test.pgm";
+		
+		FileAndFolderUtils.deleteFileIfExists("./" + outputFileName);
+		
+		System.err.println("Empieza");
+		
+		long startTime = System.nanoTime();
+		
+		List<String> linesFromPGMFile = FileAndFolderUtils.readTextFile("./imagenes_pgm/f14.ascii.pgm");
+		
+		PGMImageUtils image = PGMImageUtils.parsePGMFile(linesFromPGMFile);	
+		
+		PGMImageUtils outputPGMImage = image.copyPGMImageUtilsForModificationPurposes();
+		
+		PGMMask pgmMask = PGMMask.HORIZONTAL_SOBEL;
+		
+		//UseConcurrentApplyMask.ApplyMaskWithThreadPools(image, pgmMask, outputPGMImage);
+		UseConcurrentApplyMask.ApplyMaskWithForkJoin(image, pgmMask, outputPGMImage);
+		
+		outputPGMImage.writePGMObjectInFile(outputFileName);
+		
+		long endTime = System.nanoTime();
+		
+		System.err.println("FIN! Se han tardado "+(endTime - startTime) + " ns"); 
 	}
 }

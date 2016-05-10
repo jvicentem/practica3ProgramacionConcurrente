@@ -41,9 +41,9 @@ public class ConcurrentApplyMask
 	@Override
 	public void compute() {
 		if (getPgmImageUtils().getMaxRows() < getPgmImageUtils().getMaxColumns())
-			applyMaskByColumns(); //Habrá más llamadas recursivas, pero el caso base tendrá que procesar menos píxeles
-		else
 			applyMaskByRows();
+		else
+			applyMaskByColumns(); 
 	}
 	
 	private void applyMaskByRows() {
