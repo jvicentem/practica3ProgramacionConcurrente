@@ -18,7 +18,7 @@ public enum PGMMask {
 	   	   , "Enfocar"
 	),
 	EDGE_DETECTION(new int[][] {{0, 1, 0},
-		   						{1, 4, 1},
+		   						{1, -4, 1},
 		   						{0, 1, 0}}
 	   			  , "Detección de bordes"
 	),
